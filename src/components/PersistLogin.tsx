@@ -1,10 +1,9 @@
 import { useAppDispatch } from "../store/hooks";
 import Spinner from "./ui/loader/Spinner";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth, db } from "../firebase/setup";
+import { auth } from "../firebase/setup";
 import { useEffect, useState } from "react";
-import { collection, getDocs, query, where } from "firebase/firestore";
-import { setUserData } from "../store/slices/userSlice";
+import { fetchUserData } from "../store/async-actions/authActions";
 
 export default function PersistLogin({
   children,
@@ -17,24 +16,11 @@ export default function PersistLogin({
   useEffect(() => {
     onAuthStateChanged(auth, async (user) => {
       if (user) {
-        try {
-          const usersRef = collection(db, "users");
-
-          // Query for a document where the phoneNumber field matches the user's phone number
-          const q = query(
-            usersRef,
-            where("phoneNumber", "==", user.phoneNumber)
-          );
-          const querySnapshot = await getDocs(q);
-
-          if (!querySnapshot.empty) {
-            dispatch(setUserData(querySnapshot.docs[0].data()));
-          } else {
-            console.log("No matching user found.");
-          }
-        } catch (error) {
-          console.error("Error fetching user document:", error);
+        if (!user.phoneNumber) {
+          setLoading(false);
+          return;
         }
+        await dispatch(fetchUserData(user.phoneNumber));
       }
       setLoading(false);
     });

@@ -10,11 +10,15 @@ export default function InputBox(props: InputBoxProps) {
     <div className="relative">
       <label
         htmlFor={inputAttributes.id}
-        className="text-xs absolute -top-2 bg-white px-1 left-2 rounded-sm">
+        className={`text-xs absolute -top-2 bg-white px-1 left-2 rounded-sm ${
+          touched && error ? "text-red-400" : ""
+        }`}>
         {label}
       </label>
       <input
-        className="border border-zinc-400 rounded-sm w-full h-10 px-2"
+        className={`border  rounded-sm w-full h-10 px-2 ${
+          error ? "border-red-500" : "border-zinc-400"
+        }`}
         {...inputAttributes}
       />
       {touched && error ? (

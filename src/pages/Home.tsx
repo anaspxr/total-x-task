@@ -1,8 +1,9 @@
-import { Link } from "react-router-dom";
-import { useAppSelector } from "../store/hooks";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
+import { logout } from "../store/async-actions/authActions";
 
 export default function Home() {
-  const { user } = useAppSelector((state) => state.user);
+  const { user, loading, authError } = useAppSelector((state) => state.user);
+  const dispatch = useAppDispatch();
 
   return (
     <div className="flex h-screen justify-center items-center gap-4">
@@ -11,21 +12,14 @@ export default function Home() {
         <p>Last name: {user?.lastName}</p>
         <p>Email: {user?.email}</p>
         <p>Phone number: {user?.phoneNumber}</p>
-        <button className="bg-blue-700 text-white rounded-sm py-1">
-          Logout
+        <button
+          disabled={loading}
+          onClick={() => dispatch(logout())}
+          className="bg-blue-700 text-white rounded-sm py-1">
+          {loading ? "Logging out..." : "Logout"}
         </button>
+        <p className="text-sm text-red-700">{authError}</p>
       </div>
-
-      <Link to="/profile">
-        <button className="bg-blue-600 text-white py-2 px-4 rounded-md">
-          Profile
-        </button>
-      </Link>
-      <Link to="/login">
-        <button className="bg-blue-600 text-white py-2 px-4 rounded-md">
-          Login
-        </button>
-      </Link>
     </div>
   );
 }

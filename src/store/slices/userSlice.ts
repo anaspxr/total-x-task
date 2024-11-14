@@ -1,5 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { registerUser, sendOtp, verifyOtp } from "../async-actions/authActions";
+import {
+  fetchUserData,
+  logout,
+  registerUser,
+  sendOtp,
+  verifyOtp,
+} from "../async-actions/authActions";
 
 interface UserState {
   user: {
@@ -12,6 +18,7 @@ interface UserState {
   verificationId: string | null;
   phoneNumber: string;
   authError: string | null;
+  fetchingUserData: boolean;
   loading: boolean;
 }
 
@@ -22,6 +29,7 @@ const initialState: UserState = {
   phoneNumber: "",
   loading: false,
   verificationId: null,
+  fetchingUserData: false,
 };
 
 const userSlice = createSlice({
@@ -42,6 +50,17 @@ const userSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addCase(fetchUserData.pending, (state) => {
+        state.fetchingUserData = true;
+      })
+      .addCase(fetchUserData.fulfilled, (state, action) => {
+        state.user = action.payload;
+        state.fetchingUserData = false;
+      })
+      .addCase(fetchUserData.rejected, (state) => {
+        state.fetchingUserData = false;
+      })
+
       .addCase(sendOtp.pending, (state) => {
         state.authError = null;
         state.loading = true;
@@ -74,6 +93,23 @@ const userSlice = createSlice({
       })
       .addCase(registerUser.fulfilled, (state, action) => {
         state.user = action.payload;
+        state.loading = false;
+      })
+      .addCase(registerUser.rejected, (state, action) => {
+        state.authError = action.payload as string;
+        state.loading = false;
+      })
+      .addCase(logout.pending, (state) => {
+        state.authError = null;
+        state.loading = true;
+      })
+      .addCase(logout.fulfilled, (state) => {
+        state.user = null;
+        state.authStatus = "login";
+        state.loading = false;
+      })
+      .addCase(logout.rejected, (state, action) => {
+        state.authError = action.payload as string;
         state.loading = false;
       });
   },

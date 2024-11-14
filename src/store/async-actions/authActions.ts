@@ -7,7 +7,33 @@ import {
 import { signInWithPhoneNumber } from "firebase/auth";
 import { auth, db } from "../../firebase/setup";
 import { FirebaseError } from "firebase/app";
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
+
+const fetchUserData = createAsyncThunk(
+  "user/fetchUserData",
+  async (phoneNumber: string, { rejectWithValue }) => {
+    try {
+      const usersRef = collection(db, "users");
+
+      // Query for a document where the phoneNumber field matches the user's phone number
+      const q = query(usersRef, where("phoneNumber", "==", phoneNumber));
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        return querySnapshot.docs[0].data() as {
+          firstName: string;
+          lastName: string;
+          email: string;
+          phoneNumber: string;
+        };
+      }
+      return null;
+    } catch (error) {
+      console.error("Error fetching user document:", error);
+      return rejectWithValue("Failed to fetch user data");
+    }
+  }
+);
 
 const sendOtp = createAsyncThunk(
   "user/sendOtp",
@@ -81,4 +107,12 @@ const registerUser = createAsyncThunk(
   }
 );
 
-export { sendOtp, verifyOtp, registerUser };
+const logout = createAsyncThunk("user/logout", async () => {
+  try {
+    await auth.signOut();
+  } catch (error) {
+    console.error(error);
+  }
+});
+
+export { sendOtp, verifyOtp, registerUser, logout, fetchUserData };

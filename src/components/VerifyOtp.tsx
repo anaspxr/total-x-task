@@ -12,9 +12,6 @@ export default function VerifyOtp() {
     (state) => state.user
   );
 
-  const v =
-    "AD8T5ItkMEP2ItuJi4Ls-jyWvo6V22kjRgGdav3IuiidwFPE5XAIOYWwFG74q3jHWhVxZ6RED6lsKA80pBurr6gjBmlAP5GmzFTYVewwmKnbu1L5_JKEKxz2KCIbJOnPaSz3tq_7b0s6tIKLFW5ctVc_yVVfVk-UgQ";
-
   // Formik setup
   const { handleSubmit, handleChange, handleBlur, values, errors, touched } =
     useFormik({
@@ -22,7 +19,7 @@ export default function VerifyOtp() {
       validationSchema: otpSchema,
       onSubmit: async (values) => {
         // if (!verificationId) return;
-        await dispatch(verifyOtp({ otp: values.otp, verificationId: v }));
+        await dispatch(verifyOtp({ otp: values.otp, verificationId }));
       },
     });
 
