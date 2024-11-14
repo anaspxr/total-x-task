@@ -2,10 +2,14 @@ import { useFormik } from "formik";
 import { phoneSchema } from "../utils/yupSchema";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { sendOtp } from "../store/async-actions/authActions";
+import { useState } from "react";
+import InputBox from "./ui/InputBox";
 
 // 8555809849 test number
 export default function EnterNumber() {
   const dispatch = useAppDispatch();
+  const [isNew, setIsNew] = useState(false);
+
   const { authError, loading } = useAppSelector((state) => state.user);
 
   // Formik setup
@@ -22,35 +26,31 @@ export default function EnterNumber() {
   return (
     <div>
       <div className="mb-16">
-        <h2 className="text-3xl font-semibold text-zinc-800 my-4">Login</h2>
+        <h2 className="text-3xl font-semibold text-zinc-800 my-4">
+          {isNew ? "Sign Up" : "Login"}
+        </h2>
         <p className="text-zinc-800 text-sm">
-          Login to access to your travelwise account
+          {isNew
+            ? "Create a new travelwise account "
+            : "Login to access to your travelwise account"}
         </p>
       </div>
       <form
         onSubmit={handleSubmit}
         className="flex flex-col sm:w-[600px] gap-4 max-w-md mb-2">
         {authError && <p className="text-red-600 text-sm">{authError}</p>}
-        <div className="relative">
-          <label
-            htmlFor="phone"
-            className="text-xs absolute -top-2 bg-white px-1 left-2">
-            Enter your mobile number
-          </label>
-          <input
-            className="border border-zinc-400 rounded-sm w-full h-10 px-2"
-            type="tel"
-            id="phone"
-            name="phone"
-            onChange={handleChange}
-            onBlur={handleBlur}
-            value={values.phone}
-            required
-          />
-          {touched.phone && errors.phone ? (
-            <div className="text-red-500 text-sm mt-1">{errors.phone}</div>
-          ) : null}
-        </div>
+        <InputBox
+          error={errors.phone}
+          touched={touched.phone}
+          label="Enter Phone Number"
+          id="phone"
+          name="phone"
+          type="tel"
+          value={values.phone}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          required
+        />
         <button
           className="rounded-sm h-10 bg-blue-500 hover:bg-opacity-90 text-white "
           type="submit"
@@ -61,7 +61,9 @@ export default function EnterNumber() {
       <div id="recaptcha-container" className="w-fit m-auto"></div>
       <p className="text-center text-sm my-2">
         Don't have an account?{" "}
-        <span className="text-red-400 cursor-pointer hover:underline">
+        <span
+          onClick={() => setIsNew(!isNew)}
+          className="text-red-400 cursor-pointer hover:underline">
           Sign Up
         </span>
       </p>
