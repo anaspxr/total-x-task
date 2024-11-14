@@ -67,7 +67,8 @@ const userSlice = createSlice({
       })
       .addCase(sendOtp.fulfilled, (state, action) => {
         state.authStatus = "otpSent";
-        state.verificationId = action.payload;
+        state.phoneNumber = action.payload.phoneNumber;
+        state.verificationId = action.payload.verificationId;
         state.loading = false;
       })
       .addCase(sendOtp.rejected, (state, action) => {

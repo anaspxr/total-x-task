@@ -9,9 +9,10 @@ import Spinner from "./ui/loader/Spinner";
 
 export default function Register() {
   const dispatch = useAppDispatch();
-  const { authError, loading, user, fetchingUserData } = useAppSelector(
-    (state) => state.user
-  );
+  const { authError, loading, fetchingUserData, user, phoneNumber } =
+    useAppSelector((state) => state.user);
+
+  const navigate = useNavigate();
 
   const {
     handleSubmit,
@@ -25,18 +26,10 @@ export default function Register() {
     initialValues: { firstName: "", lastName: "", email: "", terms: false },
     validationSchema: RegisterSchema,
     onSubmit: async (values) => {
-      if (values.terms === false) {
-        setErrors({ terms: "You must accept the terms and conditions" });
-        return;
-      }
-      if (!user) return navigate("/login");
-      await dispatch(
-        registerUser({ ...values, phoneNumber: user.phoneNumber })
-      );
+      if (phoneNumber) await dispatch(registerUser({ ...values, phoneNumber }));
+      else setErrors({ terms: "Phone number is missing, please try again" });
     },
   });
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     // if the user is already registered, navigate to home page
@@ -48,7 +41,7 @@ export default function Register() {
   if (fetchingUserData) {
     return (
       <div className="h-screen flex items-center justify-center">
-        <Spinner />;
+        <Spinner />
       </div>
     );
   }

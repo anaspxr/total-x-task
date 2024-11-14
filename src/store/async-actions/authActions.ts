@@ -7,19 +7,34 @@ import {
 import { signInWithPhoneNumber } from "firebase/auth";
 import { auth, db } from "../../firebase/setup";
 import { FirebaseError } from "firebase/app";
-import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  query,
+  where,
+  getDocs,
+  or,
+} from "firebase/firestore";
 
 const fetchUserData = createAsyncThunk(
   "user/fetchUserData",
   async (phoneNumber: string, { rejectWithValue }) => {
     try {
       const usersRef = collection(db, "users");
+      const altNo = `${phoneNumber.slice(0, 3)} ${phoneNumber.slice(3)}`;
 
       // Query for a document where the phoneNumber field matches the user's phone number
-      const q = query(usersRef, where("phoneNumber", "==", phoneNumber));
+      const q = query(
+        usersRef,
+        or(
+          where("phoneNumber", "==", phoneNumber),
+          where("phoneNumber", "==", altNo)
+        )
+      );
       const querySnapshot = await getDocs(q);
 
       if (!querySnapshot.empty) {
+        console.log(querySnapshot.docs[0].data());
         return querySnapshot.docs[0].data() as {
           firstName: string;
           lastName: string;
@@ -46,7 +61,7 @@ const sendOtp = createAsyncThunk(
         recaptcha
       );
       recaptcha.clear();
-      return confirmation.verificationId;
+      return { phoneNumber, verificationId: confirmation.verificationId };
     } catch (error) {
       recaptcha.clear();
       console.error(error);

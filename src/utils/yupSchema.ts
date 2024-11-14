@@ -1,4 +1,4 @@
-import { object, string } from "yup";
+import { boolean, object, string } from "yup";
 
 export const phoneSchema = object({
   phone: string()
@@ -16,4 +16,5 @@ export const RegisterSchema = object().shape({
   firstName: string().required("First name is required"),
   lastName: string().required("Last name is required"),
   email: string().email("Invalid email").required("Email is required"),
+  terms: boolean().oneOf([true], "You must accept the terms and conditions"),
 });

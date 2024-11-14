@@ -15,13 +15,12 @@ export default function PersistLogin({
 
   useEffect(() => {
     onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        if (!user.phoneNumber) {
-          setLoading(false);
-          return;
-        }
-        await dispatch(fetchUserData(user.phoneNumber));
+      if (!user?.phoneNumber) {
+        setLoading(false);
+        return;
       }
+
+      await dispatch(fetchUserData(user.phoneNumber));
       setLoading(false);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -29,7 +29,8 @@ export default function VerifyOtp() {
         <p
           className="flex items-center gap-4 hover:bg-gray-200 rounded-md cursor-pointer"
           onClick={() => dispatch(setAuthStatus("login"))}>
-          <span className="text-3xl">{"<"}</span> <span>Back to login</span>
+          <img src="/left-arrow.svg" className="h-4 w-4"></img>{" "}
+          <span>Back to login</span>
         </p>
         <h2 className="text-3xl font-semibold text-zinc-800 my-4">
           Verify Code

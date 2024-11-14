@@ -37,7 +37,7 @@ export default function EnterNumber() {
       </div>
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col sm:w-[600px] gap-4 max-w-md mb-2">
+        className="flex flex-col sm:w-[600px] w-full gap-4 max-w-sm mb-2">
         {authError && <p className="text-red-600 text-sm">{authError}</p>}
         <InputBox
           error={errors.phone}
@@ -64,7 +64,7 @@ export default function EnterNumber() {
         <span
           onClick={() => setIsNew(!isNew)}
           className="text-red-400 cursor-pointer hover:underline">
-          Sign Up
+          {isNew ? "Login" : "Sign Up"}
         </span>
       </p>
     </div>

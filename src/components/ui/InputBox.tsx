@@ -17,7 +17,7 @@ export default function InputBox(props: InputBoxProps) {
       </label>
       <input
         className={`border  rounded-sm w-full h-10 px-2 ${
-          error ? "border-red-500" : "border-zinc-400"
+          error && touched ? "border-red-500" : "border-zinc-400"
         }`}
         {...inputAttributes}
       />
