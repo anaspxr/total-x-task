@@ -38,15 +38,17 @@ const fetchUserData = createAsyncThunk(
 const sendOtp = createAsyncThunk(
   "user/sendOtp",
   async (phoneNumber: string, { rejectWithValue }) => {
+    const recaptcha = new RecaptchaVerifier(auth, "recaptcha-container", {});
     try {
-      const recaptcha = new RecaptchaVerifier(auth, "recaptcha-container", {});
       const confirmation = await signInWithPhoneNumber(
         auth,
         phoneNumber,
         recaptcha
       );
+      recaptcha.clear();
       return confirmation.verificationId;
     } catch (error) {
+      recaptcha.clear();
       console.error(error);
       return rejectWithValue("Failed to send OTP");
     }

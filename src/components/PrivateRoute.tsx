@@ -18,5 +18,5 @@ export default function PrivateRoute() {
     return <div>Loading...</div>;
   }
 
-  return user ? <Outlet /> : <Navigate to="/login" />;
+  return user?.email ? <Outlet /> : <Navigate to="/login" />;
 }
