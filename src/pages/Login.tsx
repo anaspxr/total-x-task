@@ -1,20 +1,20 @@
 import EnterNumber from "../components/EnterNumber";
+import Register from "../components/Register";
+import VerifyOtp from "../components/VerifyOtp";
+import { useAppSelector } from "../store/hooks";
 
 export default function Login() {
-  // const handleVerifyOtp = async (e: React.FormEvent<HTMLFormElement>) => {
-  //   e.preventDefault();
-  //   const otp = "123456";
-  //   try {
-  //     const res = await otpConfirmation?.confirm(otp);
-  //     console.log(res);
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
+  const { authStatus } = useAppSelector((state) => state.user);
 
   return (
     <div className="flex h-screen items-center justify-center">
-      <EnterNumber />
+      {authStatus === "otpSent" ? (
+        <VerifyOtp />
+      ) : authStatus === "otpVerified" ? (
+        <Register />
+      ) : (
+        <EnterNumber />
+      )}
     </div>
   );
 }

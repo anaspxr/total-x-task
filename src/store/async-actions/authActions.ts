@@ -1,7 +1,13 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { RecaptchaVerifier } from "firebase/auth";
+import {
+  PhoneAuthProvider,
+  RecaptchaVerifier,
+  signInWithCredential,
+} from "firebase/auth";
 import { signInWithPhoneNumber } from "firebase/auth";
-import { auth } from "../../firebase/setup";
+import { auth, db } from "../../firebase/setup";
+import { FirebaseError } from "firebase/app";
+import { collection, addDoc } from "firebase/firestore";
 
 const sendOtp = createAsyncThunk(
   "user/sendOtp",
@@ -13,7 +19,7 @@ const sendOtp = createAsyncThunk(
         phoneNumber,
         recaptcha
       );
-      return confirmation;
+      return confirmation.verificationId;
     } catch (error) {
       console.error(error);
       return rejectWithValue("Failed to send OTP");
@@ -21,4 +27,58 @@ const sendOtp = createAsyncThunk(
   }
 );
 
-export { sendOtp };
+const verifyOtp = createAsyncThunk(
+  "user/verifyOtp",
+  async (
+    {
+      otp,
+      verificationId,
+    }: {
+      otp: string;
+      verificationId: string | null;
+    },
+    { rejectWithValue }
+  ) => {
+    try {
+      if (!verificationId) throw new Error("Verification ID not found");
+      const credential = PhoneAuthProvider.credential(verificationId, otp);
+      const res = await signInWithCredential(auth, credential);
+      const user = {
+        phoneNumber: res.user.phoneNumber!,
+        email: res.user.email,
+      };
+      return user;
+    } catch (error) {
+      if (
+        error instanceof FirebaseError &&
+        error.code === "auth/invalid-verification-code"
+      ) {
+        return rejectWithValue("Invalid OTP");
+      }
+      return rejectWithValue("Failed to verify OTP");
+    }
+  }
+);
+
+const registerUser = createAsyncThunk(
+  "user/registerUser",
+  async (
+    user: {
+      firstName: string;
+      lastName: string;
+      email: string;
+      phoneNumber: string;
+    },
+    { rejectWithValue }
+  ) => {
+    try {
+      await addDoc(collection(db, "users"), user);
+      return user;
+    } catch (error) {
+      console.error(error);
+      return rejectWithValue("Failed to register user");
+    }
+  }
+);
+
+export { sendOtp, verifyOtp, registerUser };

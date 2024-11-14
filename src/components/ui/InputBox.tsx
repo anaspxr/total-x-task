@@ -10,7 +10,7 @@ export default function InputBox(props: InputBoxProps) {
     <div className="relative">
       <label
         htmlFor={inputAttributes.id}
-        className="text-xs absolute -top-2 bg-white px-1 left-2">
+        className="text-xs absolute -top-2 bg-white px-1 left-2 rounded-sm">
         {label}
       </label>
       <input
