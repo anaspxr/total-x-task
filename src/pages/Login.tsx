@@ -12,5 +12,9 @@ export default function Login() {
   //   }
   // };
 
-  return <EnterNumber />;
+  return (
+    <div className="flex h-screen items-center justify-center">
+      <EnterNumber />
+    </div>
+  );
 }
